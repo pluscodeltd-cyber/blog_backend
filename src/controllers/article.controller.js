@@ -1,20 +1,23 @@
 import Article from "../models/Article.js"
 import cloudinary from "../config/cloudinary.js"
 
-// CREATE ARTICLE
+// CREATE ARTICLE (works with Base64 image from frontend)
 export const createArticle = async (req, res) => {
   try {
-    const { title, category, status, author, content } = req.body
-    let imageUrl = null
+    const { title, category, status, author, content, image } = req.body;
 
-    // Upload image if provided
-    if (req.file) {
+    let imageUrl = null;
+
+    // Upload Base64 image to Cloudinary if provided
+    if (image) {
       try {
-        const result = await cloudinary.uploader.upload(req.file.path)
-        imageUrl = result.secure_url
+        const result = await cloudinary.uploader.upload(image, {
+          folder: "articles", // optional folder in Cloudinary
+        });
+        imageUrl = result.secure_url;
       } catch (uploadErr) {
-        console.error("Cloudinary upload failed:", uploadErr)
-        return res.status(500).json({ message: "Image upload failed" })
+        console.error("Cloudinary upload failed:", uploadErr);
+        return res.status(500).json({ message: "Image upload failed" });
       }
     }
 
@@ -25,16 +28,15 @@ export const createArticle = async (req, res) => {
       status,
       author,
       content,
-      imageUrl, // stores URL or null
-    })
+      imageUrl, // stores Cloudinary URL or null
+    });
 
-    res.status(201).json(article)
+    res.status(201).json(article);
   } catch (err) {
-    console.error("Failed to create article:", err)
-    res.status(500).json({ message: "Failed to create article" })
+    console.error("Failed to create article:", err);
+    res.status(500).json({ message: "Failed to create article" });
   }
-}
-
+};
 
 
 export const getAllArticles = async (req, res) => {

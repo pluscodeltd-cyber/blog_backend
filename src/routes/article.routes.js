@@ -1,4 +1,5 @@
-import express from "express"
+import express from "express";
+import multer from "multer";
 import {
   createArticle,
   getAllArticles,
@@ -8,29 +9,25 @@ import {
   getTotalViews,
   getPublishedArticlesCount,
   getEngagementRate
-} from "../controllers/article.controller.js"
+} from "../controllers/article.controller.js";
 
-const router = express.Router()
+const router = express.Router();
 
-// Create a new article
-router.post("/", createArticle)
+// ---- Multer setup ----
+const storage = multer.diskStorage({}); // temporarily stores file in default tmp folder
+const upload = multer({ storage });
 
-// Get all articles
-router.get("/", getAllArticles)
+// Use 'upload.single("image")' for the createArticle route
+router.post("/", upload.single("image"), createArticle);
 
-// Get a single article by ID
-router.get("/:id", getArticleById)
-
-// Update an article by ID
-router.put("/:id", updateArticle)
-
-// Delete an article by ID
-router.delete("/:id", deleteArticle)
+// Other routes
+router.get("/", getAllArticles);
+router.get("/:id", getArticleById);
+router.put("/:id", updateArticle);
+router.delete("/:id", deleteArticle);
 
 router.get("/total-views", getTotalViews);
-
 router.get("/published-count", getPublishedArticlesCount);
+router.get("/engagement-rate", getEngagementRate);
 
-router.get("/engagement-rate", getEngagementRate)
-
-export default router
+export default router;
