@@ -1,4 +1,4 @@
-import Article from "../models/Articles.js"
+import Article from "../models/Article.js"
 import cloudinary from "../config/cloudinary.js"
 
 // CREATE
