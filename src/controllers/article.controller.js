@@ -20,23 +20,26 @@ export const createArticle = async (req, res) => {
   }
 }
 
-// GET ALL
+
 export const getAllArticles = async (req, res) => {
   try {
-    const { category } = req.query // get category from query params
-    let filter = {}
+    const { category } = req.query; // read category from query string
 
-    if (category) {
-      filter.category = category // filter by category if provided
-    }
+    // Only filter if category is provided
+    const filter = category
+      ? { category: { $regex: new RegExp(`^${category}$`, "i") } } // case-insensitive
+      : {};
 
-    const articles = await Article.find(filter).sort({ createdAt: -1 })
-    res.json(articles)
+    const articles = await Article.find(filter).sort({ createdAt: -1 });
+
+    res.status(200).json(articles);
   } catch (err) {
-    console.error(err)
-    res.status(500).json({ message: "Failed to fetch articles" })
+    console.error(err);
+    res.status(500).json({ message: "Failed to fetch articles" });
   }
-}
+};
+
+
 
 
 // GET ONE
