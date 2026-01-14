@@ -4,7 +4,8 @@ import {
   getAllArticles,
   getArticleById,
   updateArticle,
-  deleteArticle
+  deleteArticle,
+  getTotalViews,
 } from "../controllers/article.controller.js"
 
 const router = express.Router()
@@ -23,5 +24,7 @@ router.put("/:id", updateArticle)
 
 // Delete an article by ID
 router.delete("/:id", deleteArticle)
+
+router.get("/total-views", getTotalViews);
 
 export default router

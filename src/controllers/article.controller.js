@@ -66,3 +66,17 @@ export const deleteArticle = async (req, res) => {
     res.status(500).json({ message: "Failed to delete article" })
   }
 }
+
+// GET TOTAL VIEWS
+export const getTotalViews = async (req, res) => {
+  try {
+    const articles = await Article.find();
+    const totalViews = articles.reduce((sum, article) => sum + (article.views || 0), 0);
+
+    res.json({ totalViews });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to fetch total views" });
+  }
+};
+
