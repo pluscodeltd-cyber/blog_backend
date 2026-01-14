@@ -6,6 +6,8 @@ import {
   updateArticle,
   deleteArticle,
   getTotalViews,
+  getPublishedArticlesCount,
+  getEngagementRate
 } from "../controllers/article.controller.js"
 
 const router = express.Router()
@@ -27,7 +29,8 @@ router.delete("/:id", deleteArticle)
 
 router.get("/total-views", getTotalViews);
 
-router.get("/published-count", getPublishedArticlesCount)
+router.get("/published-count", getPublishedArticlesCount);
+
 router.get("/engagement-rate", getEngagementRate)
 
 export default router
