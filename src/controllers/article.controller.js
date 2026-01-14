@@ -1,24 +1,40 @@
 import Article from "../models/Article.js"
 import cloudinary from "../config/cloudinary.js"
 
-// CREATE
+// CREATE ARTICLE
 export const createArticle = async (req, res) => {
   try {
     const { title, category, status, author, content } = req.body
-    let imageUrl = ""
+    let imageUrl = null
 
+    // Upload image if provided
     if (req.file) {
-      const result = await cloudinary.uploader.upload(req.file.path)
-      imageUrl = result.secure_url
+      try {
+        const result = await cloudinary.uploader.upload(req.file.path)
+        imageUrl = result.secure_url
+      } catch (uploadErr) {
+        console.error("Cloudinary upload failed:", uploadErr)
+        return res.status(500).json({ message: "Image upload failed" })
+      }
     }
 
-    const article = await Article.create({ title, category, status, author, content, imageUrl })
+    // Create article in database
+    const article = await Article.create({
+      title,
+      category,
+      status,
+      author,
+      content,
+      imageUrl, // stores URL or null
+    })
+
     res.status(201).json(article)
   } catch (err) {
-    console.error(err)
+    console.error("Failed to create article:", err)
     res.status(500).json({ message: "Failed to create article" })
   }
 }
+
 
 
 export const getAllArticles = async (req, res) => {
