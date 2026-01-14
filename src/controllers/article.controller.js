@@ -23,13 +23,21 @@ export const createArticle = async (req, res) => {
 // GET ALL
 export const getAllArticles = async (req, res) => {
   try {
-    const articles = await Article.find().sort({ createdAt: -1 })
+    const { category } = req.query // get category from query params
+    let filter = {}
+
+    if (category) {
+      filter.category = category // filter by category if provided
+    }
+
+    const articles = await Article.find(filter).sort({ createdAt: -1 })
     res.json(articles)
   } catch (err) {
     console.error(err)
     res.status(500).json({ message: "Failed to fetch articles" })
   }
 }
+
 
 // GET ONE
 export const getArticleById = async (req, res) => {
@@ -79,4 +87,30 @@ export const getTotalViews = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch total views" });
   }
 };
+
+
+// GET published articles count
+export const getPublishedArticlesCount = async (req, res) => {
+  try {
+    const count = await Article.countDocuments({ status: "Published" })
+    res.json({ publishedCount: count })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ message: "Failed to fetch published articles count" })
+  }
+}
+
+// GET engagement rate (example: total views / total articles)
+export const getEngagementRate = async (req, res) => {
+  try {
+    const totalViewsResult = await Article.aggregate([{ $group: { _id: null, totalViews: { $sum: "$views" } } }])
+    const totalArticles = await Article.countDocuments({ status: "Published" })
+    const totalViews = totalViewsResult[0]?.totalViews || 0
+    const engagementRate = totalArticles ? (totalViews / totalArticles / 1000).toFixed(1) : 0
+    res.json({ engagementRate: parseFloat(engagementRate) })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ message: "Failed to fetch engagement rate" })
+  }
+}
 
